@@ -1,0 +1,119 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #eee;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    color: #f5f0eb;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.subtitle {
+    font-size: 1.2em;
+    color: #b8b8b8;
+    font-style: italic;
+}
+
+#canvas-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    background: #0f0f0f;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* p5.js creates canvas as a child of body by default,
+   but we'll center it with this */
+canvas {
+    display: block !important;
+    margin: 0 auto !important;
+    border-radius: 5px;
+}
+
+.info {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 10px;
+    margin-top: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info h2 {
+    color: #f5f0eb;
+    margin-bottom: 15px;
+    font-size: 1.8em;
+}
+
+.info p {
+    line-height: 1.8;
+    margin-bottom: 15px;
+    color: #d0d0d0;
+}
+
+.info ol {
+    margin-left: 30px;
+    margin-bottom: 20px;
+}
+
+.info li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+    color: #d0d0d0;
+}
+
+.info li strong {
+    color: #f5f0eb;
+}
+
+.note {
+    background: rgba(100, 200, 150, 0.1);
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #64c896;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2em;
+    }
+
+    .subtitle {
+        font-size: 1em;
+    }
+
+    .info {
+        padding: 20px;
+    }
+
+    #canvas-container {
+        padding: 10px;
+    }
+}
