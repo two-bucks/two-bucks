@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>The Relationship Lab — Gottman Method</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background layers -->
+  <div class="bg-nebula" aria-hidden="true"></div>
+  <div class="starfield" aria-hidden="true"></div>
+
+  <!-- Insight Toast -->
+  <div id="insight-toast" class="insight-toast" role="status" aria-live="polite">
+    <div id="insight-text" class="insight-text"></div>
+    <div id="insight-source" class="insight-source"></div>
+  </div>
+
+  <div id="app">
+
+    <!-- ══════════════════════════════════════════
+         WELCOME SCREEN
+    ══════════════════════════════════════════ -->
+    <div id="welcome" class="screen active">
+      <div class="spacer-xl"></div>
+      <div style="font-size:clamp(3rem,12vw,6rem); text-align:center; animation:float 3s ease-in-out infinite">🔬</div>
+      <div class="spacer-md"></div>
+      <h1 class="title-xl animate-fade-in">
+        The<br><span class="grad-c">Relationship Lab</span>
+      </h1>
+      <div class="spacer-md"></div>
+      <p class="subtitle animate-fade-in delay-1">
+        Built on 40 years of Dr. John Gottman's peer-reviewed science.<br>
+        Discover your patterns. Play with your dynamics. Grow together.
+      </p>
+      <div class="spacer-xl"></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:320px">
+        <button class="btn btn-primary w-full animate-fade-in delay-2" onclick="startSetup('A')" style="font-size:1.1rem">
+          ✨ Start Together
+        </button>
+        <button class="btn btn-ghost w-full animate-fade-in delay-3" onclick="goTo('screen-knowledge')">
+          📚 Browse Knowledge Base
+        </button>
+      </div>
+      <div class="spacer-xl"></div>
+      <div class="stat-row animate-fade-in delay-4">
+        <div class="stat-tile">
+          <div class="stat-val grad-c">40+</div>
+          <div class="stat-lbl">Years of Research</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-val grad-c">677</div>
+          <div class="stat-lbl">Couples Studied</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-val grad-c">91%</div>
+          <div class="stat-lbl">Prediction Accuracy</div>
+        </div>
+      </div>
+      <div class="spacer-md"></div>
+      <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;max-width:380px;padding:0 8px">
+        The Relationship Lab is an educational tool inspired by Gottman's research.<br>
+        Not a substitute for professional therapy.
+      </p>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SETUP SCREEN
+    ══════════════════════════════════════════ -->
+    <div id="screen-setup" class="screen">
+      <div class="spacer-xl"></div>
+      <div id="setup-partner-label" class="label" style="color:var(--c-mid)">Partner A</div>
+      <div class="spacer-sm"></div>
+      <h2 class="title-lg">Create Your Profile</h2>
+      <p id="setup-partner-desc" class="subtitle" style="font-size:0.9rem"></p>
+      <div class="spacer-lg"></div>
+
+      <div style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:20px">
+
+        <!-- Name -->
+        <div>
+          <div class="label" style="margin-bottom:8px">Your name (or nickname)</div>
+          <input id="setup-name-input" class="input" type="text" placeholder="e.g. Alex, Love, My Person..." maxlength="30">
+        </div>
+
+        <!-- Avatar -->
+        <div>
+          <div class="label" style="margin-bottom:10px">Choose your avatar</div>
+          <div class="avatar-grid"></div>
+        </div>
+
+        <!-- Quiz -->
+        <div>
+          <div class="label" style="margin-bottom:12px">Quick reflection</div>
+          <div id="setup-quiz-container"></div>
+        </div>
+
+        <button id="setup-next-btn" class="btn btn-primary w-full" onclick="submitSetup()" disabled>
+          Continue →
+        </button>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         COUPLE REVEAL
+    ══════════════════════════════════════════ -->
+    <div id="screen-reveal" class="screen">
+      <div class="spacer-xl"></div>
+      <div style="font-size:3rem;text-align:center;animation:pulse 2s ease-in-out infinite">🌌</div>
+      <div class="spacer-md"></div>
+      <h2 class="title-lg">Your Relationship System</h2>
+      <p class="subtitle" style="font-size:0.9rem">Two people. One unique dynamic.</p>
+      <div class="spacer-lg"></div>
+
+      <div class="couple-split">
+        <div class="partner-profile-card card-a">
+          <div class="avatar-display" id="reveal-a-avatar"></div>
+          <div class="partner-name grad-a" id="reveal-a-name"></div>
+          <div style="font-size:0.75rem;color:var(--text-muted)" id="reveal-a-style"></div>
+        </div>
+        <div class="partner-profile-card card-b">
+          <div class="avatar-display" id="reveal-b-avatar"></div>
+          <div class="partner-name grad-b" id="reveal-b-name"></div>
+          <div style="font-size:0.75rem;color:var(--text-muted)" id="reveal-b-style"></div>
+        </div>
+      </div>
+      <div class="spacer-lg"></div>
+
+      <div class="card card-c" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+        <div class="label" style="color:var(--c-mid)">Your Couple Pattern</div>
+        <div id="reveal-pattern" style="padding:8px 0"></div>
+      </div>
+      <div class="spacer-lg"></div>
+
+      <div class="card" style="max-width:480px">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px">The Key Insight</div>
+        <p style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary)">
+          Every couple is a <em>system</em>. Your patterns interact in ways neither of you creates alone.
+          The Relationship Lab helps you see both levels: <strong style="color:var(--a-text)">your individual patterns</strong>
+          and <strong style="color:var(--c-mid)">the system you create together</strong>.
+        </p>
+      </div>
+      <div class="spacer-lg"></div>
+
+      <button class="btn btn-primary" onclick="goTo('screen-hub',{onEnter:()=>{initHub();updateNav('screen-hub');document.getElementById('bottom-nav').style.display='flex';}})">
+        Enter the Lab 🚀
+      </button>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         HUB — THE OBSERVATORY
+    ══════════════════════════════════════════ -->
+    <div id="screen-hub" class="screen">
+      <div class="spacer-lg"></div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap">
+        <div class="profile-badge card-a">
+          <span class="badge-avatar" id="hub-a-avatar"></span>
+          <span id="hub-a-name" class="grad-a"></span>
+        </div>
+        <span style="color:var(--text-muted)">×</span>
+        <div class="profile-badge card-b">
+          <span class="badge-avatar" id="hub-b-avatar"></span>
+          <span id="hub-b-name" class="grad-b"></span>
+        </div>
+      </div>
+      <div class="spacer-lg"></div>
+
+      <!-- Orbital animation -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <canvas id="orbitCanvas" style="border-radius:50%"></canvas>
+        <div style="font-size:0.7rem;color:var(--text-muted);text-align:center">Your relationship system</div>
+      </div>
+      <div class="spacer-lg"></div>
+
+      <!-- Game Grid -->
+      <div style="width:100%;max-width:480px">
+        <div class="label" style="margin-bottom:12px;padding:0 4px">Games & Activities</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="card" style="cursor:pointer;padding:18px 14px;text-align:center" onclick="goTo('screen-bids',{onEnter:initBidsGame})">
+            <div style="font-size:2.2rem;margin-bottom:8px">🫧</div>
+            <div style="font-size:0.9rem;font-weight:700">Bid Market</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Catch emotional bids</div>
+            <div id="stat-bids" style="font-size:0.75rem;color:var(--c-mid);margin-top:6px;font-weight:600"></div>
+          </div>
+          <div class="card" style="cursor:pointer;padding:18px 14px;text-align:center" onclick="goTo('screen-horsemen',{onEnter:initHorsemenGame})">
+            <div style="font-size:2.2rem;margin-bottom:8px">🏇</div>
+            <div style="font-size:0.9rem;font-weight:700">Four Horsemen</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Identify the patterns</div>
+            <div id="stat-horsemen" style="font-size:0.75rem;color:var(--c-mid);margin-top:6px;font-weight:600"></div>
+          </div>
+          <div class="card" style="cursor:pointer;padding:18px 14px;text-align:center" onclick="goTo('screen-lovemap',{onEnter:initLovemapGame})">
+            <div style="font-size:2.2rem;margin-bottom:8px">🗺️</div>
+            <div style="font-size:0.9rem;font-weight:700">Love Map</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Know their inner world</div>
+            <div id="stat-lovemap" style="font-size:0.75rem;color:var(--c-mid);margin-top:6px;font-weight:600"></div>
+          </div>
+          <div class="card" style="cursor:pointer;padding:18px 14px;text-align:center" onclick="goTo('screen-orbit',{onEnter:initOrbitGame})">
+            <div style="font-size:2.2rem;margin-bottom:8px">☀️</div>
+            <div style="font-size:0.9rem;font-weight:700">Positive Orbit</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">The 5:1 ratio tracker</div>
+            <div id="stat-orbit" style="font-size:0.75rem;color:var(--c-mid);margin-top:6px;font-weight:600"></div>
+          </div>
+        </div>
+      </div>
+      <div class="spacer-md"></div>
+
+      <!-- Knowledge shortcuts -->
+      <div style="width:100%;max-width:480px">
+        <div class="label" style="margin-bottom:12px;padding:0 4px">Knowledge Base</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-ghost" style="flex:1;min-width:120px;font-size:0.85rem" onclick="goTo('screen-knowledge',{onEnter:initHorsemenDetail})">
+            🏇 Four Horsemen
+          </button>
+          <button class="btn btn-ghost" style="flex:1;min-width:120px;font-size:0.85rem" onclick="goTo('screen-house',{onEnter:initHouseScreen})">
+            🏠 The House
+          </button>
+          <button class="btn btn-ghost" style="flex:1;min-width:120px;font-size:0.85rem" onclick="goTo('screen-reference')">
+            🆘 Get Help Now
+          </button>
+        </div>
+      </div>
+      <div class="spacer-lg"></div>
+      <button class="btn btn-ghost" style="font-size:0.75rem;color:var(--text-muted)" onclick="if(confirm('Reset all data and start over?'))resetState()">
+        Reset profiles
+      </button>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         GAME: BID MARKET
+    ══════════════════════════════════════════ -->
+    <div id="screen-bids" class="screen">
+      <div class="spacer-lg"></div>
+      <h2 class="title-lg">🫧 The Bid Market</h2>
+      <p class="subtitle" style="font-size:0.85rem">Tap bubbles to <em>Turn Towards</em> emotional bids. Miss them and trust erodes.</p>
+      <div class="spacer-md"></div>
+
+      <!-- Stats bar -->
+      <div style="display:flex;gap:16px;align-items:center;width:100%;max-width:420px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:0.75rem;color:var(--text-muted)">⏱</span>
+          <span id="bid-timer" style="font-weight:800;font-size:1.1rem">45</span>
+        </div>
+        <div style="flex:1">
+          <div class="trust-bar-wrap">
+            <span class="trust-label">Trust</span>
+            <div class="progress-track" style="flex:1">
+              <div id="bid-trust" class="progress-fill progress-fill-c" style="width:50%"></div>
+            </div>
+            <span id="bid-trust-val" class="trust-value grad-c">50</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:0.75rem;color:var(--text-muted)">pts</span>
+          <span id="bid-score-val" style="font-weight:800;font-size:1.1rem;color:var(--a-end)">0</span>
+        </div>
+      </div>
+
+      <!-- Arena -->
+      <div class="bid-arena" id="bid-arena">
+        <!-- Bubbles spawned by JS -->
+      </div>
+
+      <div id="bid-instructions" style="text-align:center;color:var(--text-muted);font-size:0.85rem;margin-top:12px;max-width:360px">
+        <strong style="color:var(--text-secondary)">How to play:</strong><br>
+        Tap the bubbles = Turn Towards (builds trust ✓)<br>
+        Ignore them = Turn Away (erodes trust)<br>
+        <em>Matches Gottman's Trust Account model</em>
+      </div>
+      <div class="spacer-md"></div>
+
+      <button id="bid-start-btn" class="btn btn-primary" onclick="startBidsGame()">
+        ▶ Start Game
+      </button>
+
+      <!-- Result -->
+      <div id="bid-result" class="hidden" style="width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:16px">
+        <div class="spacer-sm"></div>
+        <div class="result-score grad-c" id="bid-result-score"></div>
+        <div class="result-label">points earned</div>
+        <div style="font-size:1rem;color:var(--text-secondary)">
+          Bid-catching rate: <strong id="bid-result-rate" style="color:var(--a-end)"></strong>
+          <span style="color:var(--text-muted)"> (Masters: 86%)</span>
+        </div>
+        <div class="result-insight" id="bid-result-insight"></div>
+        <button class="btn btn-primary" onclick="initBidsGame()">Play Again</button>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         GAME: FOUR HORSEMEN FIELD GUIDE
+    ══════════════════════════════════════════ -->
+    <div id="screen-horsemen" class="screen">
+      <div class="spacer-lg"></div>
+      <h2 class="title-lg">🏇 Four Horsemen<br>Field Guide</h2>
+      <p class="subtitle" style="font-size:0.85rem">Identify which Horseman is present in each scenario.</p>
+      <div class="spacer-md"></div>
+
+      <div id="horsemen-game-area" style="width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:16px">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <span class="label">Scenario</span>
+          <span id="horsemen-progress" style="font-size:0.8rem;color:var(--text-muted)">1 / 6</span>
+        </div>
+
+        <!-- Scene -->
+        <div class="card" style="border-color:rgba(139,92,246,0.2)">
+          <div style="font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px">The Situation</div>
+          <p id="horsemen-scene" style="font-size:0.95rem;line-height:1.6;font-style:italic;color:var(--text-secondary)"></p>
+        </div>
+
+        <!-- Choices -->
+        <div>
+          <div class="label" style="margin-bottom:10px">Which Horseman is this?</div>
+          <div class="choices" id="horsemen-choices"></div>
+        </div>
+
+        <!-- Feedback -->
+        <div id="horsemen-feedback" style="width:100%"></div>
+
+        <button id="horsemen-next" class="btn btn-primary hidden w-full" onclick="horsemenNext()">
+          Next Scenario →
+        </button>
+      </div>
+
+      <!-- Result -->
+      <div id="horsemen-result" class="hidden" style="width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:16px">
+        <div class="result-score grad-c" id="horsemen-final-score"></div>
+        <div class="result-label" id="horsemen-final-label"></div>
+        <div class="result-insight" id="horsemen-final-insight"></div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+          <button class="btn btn-primary" onclick="initHorsemenGame()">Play Again</button>
+          <button class="btn btn-ghost" onclick="goTo('screen-knowledge',{onEnter:initHorsemenDetail})">Deep Dive →</button>
+        </div>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         GAME: LOVE MAP EXPLORER
+    ══════════════════════════════════════════ -->
+    <div id="screen-lovemap" class="screen">
+      <div class="spacer-lg"></div>
+      <h2 class="title-lg">🗺️ Love Map</h2>
+      <p class="subtitle" style="font-size:0.85rem">How well do you know your partner's inner world?</p>
+      <div class="spacer-sm"></div>
+
+      <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.04);border-radius:var(--r-full);padding:10px 18px;border:1px solid var(--border-subtle)">
+        <span id="lovemap-about-avatar" style="font-size:1.6rem"></span>
+        <div>
+          <div style="font-size:0.7rem;color:var(--text-muted)">You're answering about</div>
+          <div id="lovemap-about-name" style="font-weight:700;font-size:0.95rem"></div>
+        </div>
+      </div>
+      <div class="spacer-md"></div>
+
+      <div id="lovemap-game-area" style="width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:16px">
+        <div class="progress-track w-full">
+          <div id="lovemap-progress-fill" class="progress-fill progress-fill-b" style="width:0%"></div>
+        </div>
+
+        <div class="card" style="border-color:rgba(8,145,178,0.3);text-align:center">
+          <div id="lovemap-q-icon" style="font-size:2.5rem;margin-bottom:12px"></div>
+          <p id="lovemap-q-text" style="font-size:1rem;line-height:1.5;font-weight:500"></p>
+        </div>
+
+        <div style="width:100%">
+          <div class="label" style="margin-bottom:8px">Your answer:</div>
+          <textarea id="lovemap-input-field" class="input" rows="3" placeholder="What do you think their answer is?" style="resize:none;height:90px"></textarea>
+        </div>
+
+        <div id="lovemap-feedback" style="width:100%"></div>
+
+        <div style="display:flex;gap:10px;width:100%">
+          <button id="lovemap-skip" class="btn btn-ghost" onclick="lovemapSkip()" style="flex:1">Skip</button>
+          <button id="lovemap-submit" class="btn btn-b" onclick="submitLovemapAnswer()" style="flex:2">Submit Answer</button>
+          <button id="lovemap-next" class="btn btn-primary hidden" onclick="lovemapNext()" style="flex:2">Next →</button>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div id="lovemap-result" class="hidden" style="width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:16px">
+        <div class="result-score grad-b" id="lovemap-final-score"></div>
+        <div class="result-label" id="lovemap-final-label"></div>
+        <div class="result-insight" id="lovemap-final-insight"></div>
+        <button class="btn btn-primary" onclick="initLovemapGame()">Try Again</button>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         GAME: POSITIVE ORBIT
+    ══════════════════════════════════════════ -->
+    <div id="screen-orbit" class="screen">
+      <div class="spacer-lg"></div>
+      <h2 class="title-lg">☀️ Positive Orbit</h2>
+      <p class="subtitle" style="font-size:0.85rem">Track your 5:1 positive-to-negative ratio in real time.</p>
+      <div class="spacer-md"></div>
+
+      <canvas id="orbitGameCanvas"></canvas>
+      <div class="spacer-sm"></div>
+      <div style="text-align:center">
+        <div id="orbit-ratio" style="font-size:2.2rem;font-weight:900" class="grad-c">—</div>
+        <div id="orbit-status" style="font-size:0.85rem;color:var(--text-secondary);margin-top:4px"></div>
+      </div>
+      <div class="spacer-md"></div>
+
+      <!-- Ratio bar -->
+      <div style="width:100%;max-width:420px">
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-muted);margin-bottom:6px">
+          <span>0:1</span><span>3:1 Stable</span><span>5:1 Thriving</span><span>8:1+</span>
+        </div>
+        <div class="progress-track">
+          <div id="orbit-ratio-fill" class="progress-fill progress-fill-c" style="width:50%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-top:8px;color:var(--text-secondary)">
+          <span>➕ Positives: <strong id="orbit-pos" class="grad-c">0</strong></span>
+          <span>➖ Negatives: <strong id="orbit-neg" style="color:#ef4444">0</strong></span>
+        </div>
+      </div>
+      <div class="spacer-md"></div>
+
+      <!-- Log buttons -->
+      <div style="width:100%;max-width:420px">
+        <div class="label" style="margin-bottom:10px">Log an interaction:</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="btn" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#86efac;font-size:0.85rem" onclick="logInteraction('compliment')">💛 Gave compliment</button>
+          <button class="btn" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#86efac;font-size:0.85rem" onclick="logInteraction('joke')">😄 Shared a laugh</button>
+          <button class="btn" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#86efac;font-size:0.85rem" onclick="logInteraction('touch')">🤝 Physical touch</button>
+          <button class="btn" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#86efac;font-size:0.85rem" onclick="logInteraction('connect')">🫂 Quality time</button>
+          <button class="btn" style="background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;font-size:0.85rem" onclick="logInteraction('criticism')">🗡️ Made criticism</button>
+          <button class="btn" style="background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;font-size:0.85rem" onclick="logInteraction('eyeroll')">👁️ Eye roll/sneer</button>
+          <button class="btn" style="background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;font-size:0.85rem;grid-column:1/-1" onclick="logInteraction('snap')">⚡ Snapped/irritated</button>
+        </div>
+      </div>
+      <div class="spacer-md"></div>
+
+      <!-- Log -->
+      <div style="width:100%;max-width:420px">
+        <div class="label" style="margin-bottom:10px">Recent interactions:</div>
+        <div id="orbit-log" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+
+      <div class="spacer-md"></div>
+      <div class="card" style="max-width:420px;padding:16px;border-color:rgba(124,58,237,0.2)">
+        <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:6px">Research Basis</div>
+        <p style="font-size:0.82rem;line-height:1.5;color:var(--text-secondary)">
+          Gottman's "Magic Ratio" research (1992): stable couples maintain at least <strong style="color:var(--text-primary)">5 positive to 1 negative interaction</strong>.
+          In conflict, the ratio needed may be even higher. The ratio matters more than total volume.
+        </p>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         REFERENCE MANUAL
+    ══════════════════════════════════════════ -->
+    <div id="screen-reference" class="screen">
+      <div class="spacer-lg"></div>
+      <h2 class="title-lg">🆘 Get Help Now</h2>
+      <p class="subtitle" style="font-size:0.85rem">Pick your situation. Get the right tools immediately.</p>
+      <div class="spacer-lg"></div>
+      <div class="situation-grid">
+        <div class="situation-chip" onclick="showSituationCard('just-fought')">
+          <div class="chip-icon">⛈️</div>
+          <div>We just had a fight</div>
+        </div>
+        <div class="situation-chip" onclick="showSituationCard('disconnected')">
+          <div class="chip-icon">🌫️</div>
+          <div>We feel disconnected</div>
+        </div>
+        <div class="situation-chip" onclick="showSituationCard('same-argument')">
+          <div class="chip-icon">🔄</div>
+          <div>Same fight again</div>
+        </div>
+        <div class="situation-chip" onclick="showSituationCard('flooded')">
+          <div class="chip-icon">🌊</div>
+          <div>One of us is flooded</div>
+        </div>
+        <div class="situation-chip" onclick="showSituationCard('want-deeper')">
+          <div class="chip-icon">🌊</div>
+          <div>Want to go deeper</div>
+        </div>
+        <div class="situation-chip" onclick="showSituationCard('worried')">
+          <div class="chip-icon">💭</div>
+          <div>I'm worried about us</div>
+        </div>
+        <div class="situation-chip" onclick="showSituationCard('things-good')">
+          <div class="chip-icon">☀️</div>
+          <div>Things are good!</div>
+        </div>
+        <div class="situation-chip" onclick="showSituationCard('solo')">
+          <div class="chip-icon">🪞</div>
+          <div>Solo reflection</div>
+        </div>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- Reference Detail -->
+    <div id="screen-ref-detail" class="screen">
+      <button class="back-btn" onclick="goTo('screen-reference',{dir:'back'})">← Back</button>
+      <div class="spacer-xl"></div>
+      <div id="ref-emoji" style="font-size:3rem;text-align:center"></div>
+      <div class="spacer-sm"></div>
+      <h2 id="ref-title" class="title-lg"></h2>
+      <div class="spacer-lg"></div>
+      <div class="card" style="max-width:480px;border-color:rgba(124,58,237,0.25)">
+        <p id="ref-insight" style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary)"></p>
+      </div>
+      <div class="spacer-md"></div>
+      <div class="label" style="margin-bottom:12px">Your 3 Tools Right Now</div>
+      <div id="ref-tools" style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:10px"></div>
+      <div class="spacer-md"></div>
+      <div class="card" style="max-width:480px;background:rgba(124,58,237,0.08);border-color:rgba(124,58,237,0.2)">
+        <div class="label" style="margin-bottom:8px;color:var(--c-mid)">Gottman Says</div>
+        <p id="ref-quote" style="font-size:0.9rem;font-style:italic;color:var(--text-secondary);line-height:1.5"></p>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         KNOWLEDGE BASE
+    ══════════════════════════════════════════ -->
+    <div id="screen-knowledge" class="screen">
+      <div class="spacer-lg"></div>
+      <h2 class="title-lg">📚 Knowledge Base</h2>
+      <p class="subtitle" style="font-size:0.85rem">Gottman's core frameworks, explained.</p>
+      <div class="spacer-lg"></div>
+      <div style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:10px">
+        <div class="card" style="cursor:pointer" onclick="goTo('screen-knowledge-horsemen',{onEnter:initHorsemenDetail})">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="font-size:2rem">🏇</span>
+            <div>
+              <div class="title-md">The Four Horsemen</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px">Predictors of relationship failure + their antidotes</div>
+            </div>
+            <span style="margin-left:auto;color:var(--text-muted)">→</span>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="goTo('screen-house',{onEnter:initHouseScreen})">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="font-size:2rem">🏠</span>
+            <div>
+              <div class="title-md">Sound Relationship House</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px">The 7-floor model of relationship health</div>
+            </div>
+            <span style="margin-left:auto;color:var(--text-muted)">→</span>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="goTo('screen-bids-info')">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="font-size:2rem">🫂</span>
+            <div>
+              <div class="title-md">Emotional Bids</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px">The micro-moments that build or erode trust</div>
+            </div>
+            <span style="margin-left:auto;color:var(--text-muted)">→</span>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="goTo('screen-research')">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="font-size:2rem">🔬</span>
+            <div>
+              <div class="title-md">Research Findings</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px">Key stats from the Love Lab</div>
+            </div>
+            <span style="margin-left:auto;color:var(--text-muted)">→</span>
+          </div>
+        </div>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- Four Horsemen Knowledge -->
+    <div id="screen-knowledge-horsemen" class="screen">
+      <button class="back-btn" onclick="goTo('screen-knowledge',{dir:'back'})">← Back</button>
+      <div class="spacer-xl"></div>
+      <h2 class="title-lg">🏇 The Four Horsemen</h2>
+      <p class="subtitle" style="font-size:0.85rem">Tap a card to flip and see the antidote.</p>
+      <div class="spacer-lg"></div>
+      <div id="horsemen-detail-grid" style="width:100%;max-width:480px;display:grid;grid-template-columns:1fr 1fr;gap:12px"></div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- Horseman Detail -->
+    <div id="screen-horseman-detail" class="screen">
+      <button class="back-btn" onclick="goTo('screen-knowledge-horsemen',{dir:'back'})">← Back</button>
+      <div class="spacer-xl"></div>
+      <div id="horseman-d-emoji" style="font-size:3.5rem;text-align:center"></div>
+      <h2 id="horseman-d-name" class="title-lg"></h2>
+      <div class="spacer-lg"></div>
+      <div style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="label" style="margin-bottom:8px">Definition</div>
+          <p id="horseman-d-def" style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary)"></p>
+        </div>
+        <div class="card" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2)">
+          <div class="label" style="margin-bottom:6px;color:#fca5a5">Example</div>
+          <p id="horseman-d-example" style="font-size:0.88rem;font-style:italic;color:var(--text-secondary);line-height:1.5"></p>
+          <div class="label" style="margin-top:12px;margin-bottom:6px;color:#86efac">Better Approach</div>
+          <p id="horseman-d-vs" style="font-size:0.88rem;font-style:italic;color:var(--text-secondary);line-height:1.5"></p>
+        </div>
+        <div class="card" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.2)">
+          <div class="label" style="margin-bottom:8px;color:#86efac">The Antidote</div>
+          <div id="horseman-d-antidote-name" style="font-size:1rem;font-weight:700;margin-bottom:8px"></div>
+          <p id="horseman-d-antidote-how" style="font-size:0.88rem;color:var(--text-secondary);line-height:1.5;margin-bottom:10px"></p>
+          <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:12px">
+            <div class="label" style="margin-bottom:6px">Script:</div>
+            <p id="horseman-d-script" style="font-size:0.85rem;font-style:italic;color:var(--a-text)"></p>
+          </div>
+        </div>
+        <div class="card" style="background:rgba(124,58,237,0.06)">
+          <div class="label" style="margin-bottom:8px">Research Note</div>
+          <p id="horseman-d-note" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5"></p>
+        </div>
+        <div class="card">
+          <div class="label" style="margin-bottom:6px;color:var(--a-text)">For You Individually</div>
+          <p id="horseman-d-individual" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;margin-bottom:12px"></p>
+          <div class="label" style="margin-bottom:6px;color:var(--c-mid)">For Your Couple System</div>
+          <p id="horseman-d-couple" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5"></p>
+        </div>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- Sound Relationship House -->
+    <div id="screen-house" class="screen">
+      <button class="back-btn" onclick="goTo('screen-knowledge',{dir:'back'})">← Back</button>
+      <div class="spacer-xl"></div>
+      <h2 class="title-lg">🏠 Sound Relationship<br>House</h2>
+      <p class="subtitle" style="font-size:0.85rem">7 floors from foundation to meaning. Tap any floor to explore.</p>
+      <div class="spacer-lg"></div>
+      <div id="house-floors-list" class="house-floors"></div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- Floor Detail -->
+    <div id="screen-floor-detail" class="screen">
+      <button class="back-btn" onclick="goTo('screen-house',{dir:'back'})">← Back</button>
+      <div class="spacer-xl"></div>
+      <div id="floor-detail-emoji" style="font-size:3rem;text-align:center"></div>
+      <h2 id="floor-detail-name" class="title-lg"></h2>
+      <div class="spacer-lg"></div>
+      <div style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <p id="floor-detail-desc" style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary)"></p>
+        </div>
+        <div class="card">
+          <div class="label" style="margin-bottom:10px;color:#86efac">Practices</div>
+          <ul id="floor-detail-practices" style="padding-left:18px;color:var(--text-secondary);font-size:0.88rem"></ul>
+        </div>
+        <div class="card" style="background:rgba(239,68,68,0.06)">
+          <div class="label" style="margin-bottom:10px;color:#fca5a5">Warning Signs</div>
+          <ul id="floor-detail-flags" style="padding-left:18px;font-size:0.88rem"></ul>
+        </div>
+        <div class="card" style="background:rgba(124,58,237,0.08)">
+          <div class="label" style="margin-bottom:8px;color:var(--c-mid)">Reflect on This</div>
+          <p id="floor-detail-quiz" style="font-size:0.88rem;font-style:italic;color:var(--text-secondary);line-height:1.5"></p>
+        </div>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- Emotional Bids Info -->
+    <div id="screen-bids-info" class="screen">
+      <button class="back-btn" onclick="goTo('screen-knowledge',{dir:'back'})">← Back</button>
+      <div class="spacer-xl"></div>
+      <h2 class="title-lg">🫂 Emotional Bids</h2>
+      <p class="subtitle" style="font-size:0.85rem">Any attempt to connect. The building blocks of trust.</p>
+      <div class="spacer-lg"></div>
+      <div style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:10px">
+        <div class="card" style="background:rgba(124,58,237,0.08);border-color:rgba(124,58,237,0.2)">
+          <p style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary)">
+            An emotional bid is <strong style="color:var(--text-primary)">any attempt to connect</strong> — a comment, a sigh, a touch, a look.
+            Your partner makes dozens of bids daily. How you respond determines the trust bank account.
+          </p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 3fr;gap:6px;padding:4px 0">
+          <div class="card" style="text-align:center;padding:12px 8px;background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.2)">
+            <div style="font-size:1.4rem">🫂</div><div style="font-size:0.7rem;color:#86efac;margin-top:4px">Turn Towards</div>
+          </div>
+          <div class="card" style="padding:12px 14px">
+            <p style="font-size:0.85rem;color:var(--text-secondary)">Respond genuinely. Engage with the bid. Ask a follow-up. <strong>Builds trust.</strong></p>
+          </div>
+          <div class="card" style="text-align:center;padding:12px 8px;background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2)">
+            <div style="font-size:1.4rem">😶</div><div style="font-size:0.7rem;color:#fbbf24;margin-top:4px">Turn Away</div>
+          </div>
+          <div class="card" style="padding:12px 14px">
+            <p style="font-size:0.85rem;color:var(--text-secondary)">Ignore or give minimal response. Often unintentional. <strong>Slowly erodes trust.</strong></p>
+          </div>
+          <div class="card" style="text-align:center;padding:12px 8px;background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2)">
+            <div style="font-size:1.4rem">💥</div><div style="font-size:0.7rem;color:#fca5a5;margin-top:4px">Turn Against</div>
+          </div>
+          <div class="card" style="padding:12px 14px">
+            <p style="font-size:0.85rem;color:var(--text-secondary)">Reject or criticize the bid. Hostile response. <strong>Damages trust quickly.</strong></p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="label" style="margin-bottom:10px">The 6 Bid Types</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${'' /* JS will render this */}
+          </div>
+        </div>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- Research Findings -->
+    <div id="screen-research" class="screen">
+      <button class="back-btn" onclick="goTo('screen-knowledge',{dir:'back'})">← Back</button>
+      <div class="spacer-xl"></div>
+      <h2 class="title-lg">🔬 Research Findings</h2>
+      <p class="subtitle" style="font-size:0.85rem">Key numbers from 40+ years in the Love Lab.</p>
+      <div class="spacer-lg"></div>
+      <div style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px" id="research-cards">
+        <!-- Rendered by JS -->
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         INSIGHTS SCREEN
+    ══════════════════════════════════════════ -->
+    <div id="screen-insights" class="screen">
+      <div class="spacer-lg"></div>
+      <h2 class="title-lg">🌟 Your Insights</h2>
+      <p class="subtitle" style="font-size:0.85rem">Your individual patterns + your couple system.</p>
+      <div class="spacer-lg"></div>
+
+      <!-- Dual profile cards -->
+      <div class="couple-split" style="max-width:480px">
+        <div class="partner-profile-card card-a">
+          <div class="avatar-display" id="insights-a-avatar"></div>
+          <div class="partner-name grad-a" id="insights-a-name"></div>
+          <div style="font-size:0.75rem;color:var(--text-muted)" id="insights-a-style"></div>
+          <div style="font-size:0.75rem;color:var(--a-text);margin-top:4px" id="insights-a-horseman"></div>
+        </div>
+        <div class="partner-profile-card card-b">
+          <div class="avatar-display" id="insights-b-avatar"></div>
+          <div class="partner-name grad-b" id="insights-b-name"></div>
+          <div style="font-size:0.75rem;color:var(--text-muted)" id="insights-b-style"></div>
+          <div style="font-size:0.75rem;color:var(--b-text);margin-top:4px" id="insights-b-horseman"></div>
+        </div>
+      </div>
+      <div class="spacer-md"></div>
+
+      <!-- Couple pattern -->
+      <div class="card card-c" style="max-width:480px;text-align:center">
+        <div class="label" style="margin-bottom:10px;color:var(--c-mid)">Your Couple System Pattern</div>
+        <div id="insights-couple-pattern" style="display:flex;flex-direction:column;align-items:center;gap:6px"></div>
+      </div>
+      <div class="spacer-md"></div>
+
+      <!-- Scores -->
+      <div style="width:100%;max-width:480px">
+        <div class="label" style="margin-bottom:10px">Game Progress</div>
+        <div class="stat-row">
+          <div class="stat-tile">
+            <div class="stat-val grad-c" id="insights-score-bids"></div>
+            <div class="stat-lbl">Bid Market</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-val grad-c" id="insights-score-horsemen"></div>
+            <div class="stat-lbl">Horsemen</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-val grad-c" id="insights-score-lovemap"></div>
+            <div class="stat-lbl">Love Map</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:10px;text-align:center">
+          <div class="label" style="margin-bottom:4px">Current Orbit Ratio</div>
+          <div class="stat-val grad-c" id="insights-ratio" style="font-size:1.8rem"></div>
+        </div>
+      </div>
+      <div class="spacer-xl"></div>
+    </div>
+
+  </div><!-- /app -->
+
+  <!-- Bottom Navigation -->
+  <nav id="bottom-nav" class="bottom-nav" style="display:none">
+    <button class="nav-item" data-target="screen-hub">
+      <span class="nav-icon">🌌</span>
+      <span>Lab</span>
+    </button>
+    <button class="nav-item" data-target="screen-reference">
+      <span class="nav-icon">🆘</span>
+      <span>Help</span>
+    </button>
+    <button class="nav-item" data-target="screen-knowledge">
+      <span class="nav-icon">📚</span>
+      <span>Learn</span>
+    </button>
+    <button class="nav-item" data-target="screen-insights">
+      <span class="nav-icon">🌟</span>
+      <span>Insights</span>
+    </button>
+  </nav>
+
+  <script src="gottman-data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // ── Post-load enhancements ──────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      // Render bids info
+      const bidsInfoCard = document.querySelector('#screen-bids-info .card:last-child div:last-child');
+      if (bidsInfoCard) {
+        bidsInfoCard.innerHTML = GOTTMAN_DATA.bidTypes.map(b => `
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+            <span style="font-size:1.4rem">${b.emoji}</span>
+            <div>
+              <div style="font-size:0.85rem;font-weight:600">${b.name}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">${b.examples.join(' · ')}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Render research cards
+      const researchEl = document.getElementById('research-cards');
+      if (researchEl) {
+        researchEl.innerHTML = GOTTMAN_DATA.researchStats.map(s => `
+          <div class="card" style="border-color:rgba(124,58,237,0.2)">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+              <div style="font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--c-start),var(--c-mid));-webkit-background-clip:text;-webkit-text-fill-color:transparent">${s.stat}</div>
+              <strong>${s.label}</strong>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5">${s.desc}</p>
+            <div style="margin-top:8px;font-size:0.72rem;color:var(--text-muted);font-style:italic">${s.source}</div>
+          </div>
+        `).join('');
+      }
+    });
+  </script>
+</body>
+</html>
